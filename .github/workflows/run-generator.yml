@@ -1,0 +1,29 @@
+name: Ejecutar manualmente el generador de listas
+
+on:
+  workflow_dispatch:  # 👈 permite ejecutarlo manualmente desde la web
+
+jobs:
+  run-generator:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar dependencias
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq curl
+
+      - name: Ejecutar script de generación
+        run: |
+          chmod +x generate_voip_list.sh
+          ./generate_voip_list.sh
+
+      - name: Subir resultado al repositorio
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "actions@github.com"
+          git add voip_videocall.rsc
+          git commit -m "Actualización automática de voip_videocall.rsc [manual run]" || echo "Sin cambios"
+          git push
